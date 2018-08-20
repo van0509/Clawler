@@ -9,6 +9,7 @@ from UA import UA
 from myDb import mySql
 from lxml import etree
 import requests,asyncio
+import json
 
 
 BASE_URL='http://www.ygdy8.net'
@@ -76,12 +77,13 @@ def parse_detail_page(url):
 
 async def spider():
     base_url = 'http://www.ygdy8.net/html/gndy/dyzz/list_23_{}.html'
-    for i in range(1,8):
+    for i in range(1,178):
         url=base_url.format(i)
         movie=get_detail_urls(url)
         for x in movie:
             info=parse_detail_page(x)
-            print(info)
+            with open('dytt.json','a',encoding='utf-8') as f:
+                f.write(json.dumps(info,ensure_ascii=False)+'\n')
 
 if __name__ == '__main__':
     tasks=[asyncio.ensure_future(spider())]
