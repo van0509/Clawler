@@ -10,7 +10,7 @@
 """
 
 import requests
-import re
+import re,multiprocessing
 import myDb
 from UA import UA
 # url='http://www.ygdy8.net/html/gndy/dyzz/list_23_1.html'
@@ -32,7 +32,7 @@ def parse_Info(url):
     db=myDb.mySql()
     name=infos[0][0]
     link=infos[0][1]
-    sql='INSERT INTO seven.movies(name, link)VALUES(%s,%s);'
+    sql='INSERT INTO seven.movie(name, link)VALUES(%s,%s);'
     params=(name,link)
     resoult=db.execute(sql,params)
     if resoult==True:
@@ -43,11 +43,15 @@ def parse_Info(url):
 
 def spider():
     base_url = 'http://www.ygdy8.net/html/gndy/dyzz/list_23_{}.html'
+    pool=multiprocessing.Pool(multiprocessing.cpu_count())
     for i in range(1,8):
         url=base_url.format(i)
         moives=get_Info(url)
         for m in moives:
             parse_Info(m)
+            # pool.apply_async(parse_Info,(m,))
+        # pool.close()
+        # pool.join()
 
 if __name__ == '__main__':
 
