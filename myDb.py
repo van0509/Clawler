@@ -52,13 +52,49 @@ class mySql:
             return False
         return True
 
+    def readone(self, sql):
+        if self.connectDateBase() == False:
+            return False
+        try:
+            if self.conn and self.cur:
+                self.cur.execute(sql)
+                self.conn.commit()
+        except:
+            print('read' + sql + 'error')
+            return False
+        return self.cur.fetchone()
+
+    def readall(self,sql):
+        if self.connectDateBase() == False:
+            return False
+        try:
+            if self.conn and self.cur:
+                self.cur.execute(sql)
+                self.conn.commit()
+        except:
+            print('read' + sql + 'error')
+            return False
+        return self.cur.fetchall()
+
+    def readmany(self,sql):
+        if self.connectDateBase() == False:
+            return False
+        try:
+            if self.conn and self.cur:
+                self.cur.execute(sql)
+                self.conn.commit()
+        except:
+            print('read' + sql + 'error')
+            return False
+        return self.cur.fetchmany()
 
 if __name__ == "__main__":
-    db=mySql()
-    sql='INSERT INTO seven.movies(name, link)VALUES(%s,%s);'
-    params=("我是谁","www.baidu.com")
-    resoult=db.execute(sql,params)
-    if resoult==True:
-        print('Insert 成功')
-    else:
-        print('Insert 失败')
+    db = mySql()
+    sql = 'SELECT ID from python;'
+    params = ("我是谁", "www.baidu.com")
+    resoult = db.readone(sql)
+    # if resoult == True:
+    #     print('Insert 成功')
+    # else:
+    #     print('Insert 失败')
+    print([i[0] for i in resoult])

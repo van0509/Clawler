@@ -6,7 +6,7 @@
 @creat_time=2018/8/1620:15
 '''
 import random
-class UA:
+class UA(object):
 
     def __init__(self):
         self.ua=[
