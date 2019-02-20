@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+import datetime
 import re
 
 import scrapy
 from scrapy.http import Request
 
 from ..items import JobBoleArticleItem
+from ..utils.common import get_md5
 
 
 class JobboleSpider(scrapy.Spider):
@@ -39,7 +41,12 @@ class JobboleSpider(scrapy.Spider):
         comment_nums = re.findall('<i class="fa fa-comments-o"></i>([\s\S]*?)</span></a>', response.text)[0]
         article_item['title']=title
         article_item['url']=response.url
+        article_item['url_object_id']=get_md5(response.url)
         article_item['front_image_url']=[front_image_url]
+        try:
+            creat_date=datetime.datetime.strptime(creat_date,'%Y/%M/%D').date()
+        except Exception as e:
+            creat_date=datetime.datetime.now().date()
         article_item['creat_date']=creat_date
         article_item['fav_nums']=fav_nums
         article_item['praise_nums']=praise_nums

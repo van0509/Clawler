@@ -65,12 +65,18 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'atrucle_spider.pipelines.AtrucleSpiderPipeline': 300,
-    'scrapy.pipelines.images.ImagesPipeline':1,
+    # 'atrucle_spider.pipelines.JsonExporterPipeline': 2,
+    # # 'scrapy.pipelines.images.ImagesPipeline':1,
+    # 'atrucle_spider.pipelines.ArticleImagePipeline':1
+    'atrucle_spider.pipelines.MysqlePipeline':1
+
 }
 IMAGES_URLS_FIELD = 'front_image_url'
 project_dir=os.path.abspath(os.path.dirname(__file__))
 IMAGES_STORE=os.path.join(project_dir,'images')
+
+# IMAGES_MIN_HEIGHT=100
+# IMAGES_MIN_WIDTH=100
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
 # AUTOTHROTTLE_ENABLED = True
