@@ -67,8 +67,8 @@ ROBOTSTXT_OBEY = False
 ITEM_PIPELINES = {
     # 'atrucle_spider.pipelines.JsonExporterPipeline': 2,
     # # 'scrapy.pipelines.images.ImagesPipeline':1,
-    # 'atrucle_spider.pipelines.ArticleImagePipeline':1
-    'atrucle_spider.pipelines.MysqlePipeline':1
+    'atrucle_spider.pipelines.ArticleImagePipeline':1,
+    'atrucle_spider.pipelines.MysqlTwistedPipline':1,
 
 }
 IMAGES_URLS_FIELD = 'front_image_url'
@@ -97,3 +97,9 @@ IMAGES_STORE=os.path.join(project_dir,'images')
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+
+MYSQL_HOST='localhost'
+MYSQL_DBNAME='seven'
+MYSQL_USER='root'
+MYSQL_PWD='123456'

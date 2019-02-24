@@ -9,7 +9,6 @@
 __author__ = 'Seven'
 
 import hashlib
-import pymysql
 
 
 def get_md5(url):
@@ -18,12 +17,3 @@ def get_md5(url):
     m = hashlib.md5()
     m.update(url)
     return m.hexdigest()
-
-def conn_mysql(conn):
-
-    corsur=conn.cursor()
-    print(corsur)
-
-if __name__ == '__main__':
-    conn = pymysql.connect(host='localhost', port=3306, user='root', passwd='123456', db='seven', charset='utf8')
-    conn_mysql(conn)

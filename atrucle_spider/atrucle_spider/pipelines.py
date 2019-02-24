@@ -3,13 +3,14 @@
 import codecs
 import json
 
-import MySQLdb
+import pymysql
 from scrapy.exporters import JsonItemExporter
 # Define your item pipelines here
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 from scrapy.pipelines.images import ImagesPipeline
+from twisted.enterprise import adbapi
 
 
 class AtrucleSpiderPipeline(object):
@@ -49,17 +50,50 @@ class JsonExporterPipeline(object):
 
 class MysqlePipeline(object):
     def __init__(self):
-        self.conn = MySQLdb.Connect('localhost', 'root', '123456', 'seven', charset='utf8',use_unicode=True)
+        self.conn = pymysql.connect('localhost', 'root', '123456', 'seven', charset='utf8')
         self.cursor = self.conn.cursor()
 
     def process_item(self, item, spider):
-        insert_sql = '''
-        insert into seven.jobbole(title,url,url_object_id,creat_date,front_image_url,front_image_path,fav_nums,comment_nums,praise_nums) values(%s,%s,%s,%s,%s,%s,%s,%s) 
-        '''
-        self.cursor.execute(insert_sql, (
-        item['title'], item['url'], item['url_object_id'], item['creat_date'], item['front_image_url'],
-        item['front_image_path'], item['fav_nums'], item['comment_nums'], item['praise_nums']))
+        insert_sql = '''insert into jobbole(title,url,url_object_id,creat_date,front_image_url,front_image_path,fav_nums,comments_nums,praise_nums) values(%s,%s,%s,%s,%s,%s,%s,%s,%s);'''
+        params = (item['title'], item['url'], item['url_object_id'], item['creat_date'], item['front_image_url'],
+                  item['front_image_path'], item['fav_nums'], item['comment_nums'], item['praise_nums'])
+        self.cursor.execute(insert_sql, params)
         self.conn.commit()
+
+
+class MysqlTwistedPipline(object):
+    def __init__(self, dbpool):
+        self.dbpool = dbpool
+
+    @classmethod
+    def from_setting(cls, settings):
+        dbparms = dict(
+            host=settings['MYSQL_HOST'],
+            db=settings['MYSQL_DBNAME'],
+            user=settings['MYSQL_USER'],
+            password=settings['MYSQL_PWD'],
+            charset='utf8',
+        )
+        dbpool = adbapi.ConnectionPool('pymysql', **dbparms)
+
+        return cls(dbpool)
+
+    def process_item(self, item, spider):
+        # 使用twusted将mysql插入变成异步执行
+        query = self.dbpool.runInteraction(self.do_insert, item)
+        query.addErrback(self.handle_error)  # 处理异常
+        return item
+
+    def handle_error(self, failure):
+        # 处理异步插入的异常
+        print(failure)
+
+    def do_insert(self, cursor, item):
+        # 具体的插入操作
+        insert_sql = '''insert into jobbole(title,url,url_object_id,creat_date,front_image_url,front_image_path,fav_nums,comments_nums,praise_nums) values(%s,%s,%s,%s,%s,%s,%s,%s,%s);'''
+        params = (item['title'], item['url'], item['url_object_id'], item['creat_date'], item['front_image_url'],
+                  item['front_image_path'], item['fav_nums'], item['comment_nums'], item['praise_nums'])
+        cursor.execute(insert_sql, params)
 
 
 class ArticleImagePipeline(ImagesPipeline):

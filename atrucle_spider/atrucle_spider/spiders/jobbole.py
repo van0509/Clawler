@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
 import re
 
 import scrapy
@@ -36,20 +35,22 @@ class JobboleSpider(scrapy.Spider):
         front_image_url = response.meta.get('front_image_url', )  # 文章封面图
         title = re.findall(r'<h1>([\s\S]*?)</h1>', response.text)[0]
         creat_date = re.findall('p class="entry-meta-hide-on-mobile">[\s]*?([\S]*?)[\s]&middot;', response.text)[0]
-        praise_nums = re.findall(r'votetotal">([\S]*?)</h10> 赞</span>', response.text)[0] + ' 赞'
+        praise_nums = re.findall(r'votetotal">([\S]*?)</h10> 赞</span>', response.text)[0] + '赞'
         fav_nums = re.findall('i class="fa fa-bookmark-o  "></i>([\s\S]*?)</span>', response.text)[0]
         comment_nums = re.findall('<i class="fa fa-comments-o"></i>([\s\S]*?)</span></a>', response.text)[0]
         article_item['title']=title
         article_item['url']=response.url
         article_item['url_object_id']=get_md5(response.url)
         article_item['front_image_url']=[front_image_url]
-        try:
-            creat_date=datetime.datetime.strptime(creat_date,'%Y/%M/%D').date()
-        except Exception as e:
-            creat_date=datetime.datetime.now().date()
+        # try:
+        #     creat_dates=datetime.datetime.strptime(creat_date,'%Y/%M/%D').date()
+        # except Exception as e:
+        #     creat_dates=datetime.datetime.now().date()
         article_item['creat_date']=creat_date
         article_item['fav_nums']=fav_nums
         article_item['praise_nums']=praise_nums
         article_item['comment_nums']=comment_nums
 
         yield article_item
+
+        pass
